@@ -1,0 +1,5 @@
+{
+  "name": "Harmonia: Maestro de Acordes",
+  "description": "Una aplicación interactiva para aprender teoría musical, acordes y el círculo de quintas con visualización en pentagrama y piano en tiempo real.",
+  "requestFramePermissions": []
+}
