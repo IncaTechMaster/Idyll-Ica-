@@ -48,11 +48,9 @@ const App: React.FC = () => {
   const handlePianoKeyClick = (noteName: NoteName, isChordMember: boolean) => {
     const midi = NOTE_TO_MIDI[noteName];
     if (isChordMember) {
-      // If clicking a key that belongs to the current chord, play the whole chord arpeggiated
       audioService.playArpeggio(chord.midiNotes, 0.15);
       visualFeedback(chord.midiNotes, 1000);
     } else {
-      // Standard note behavior
       audioService.playNote(midi);
       setRoot(noteName);
       visualFeedback([midi], 200);
@@ -71,11 +69,11 @@ const App: React.FC = () => {
             <h1 className="text-4xl font-extrabold bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
               Harmonia
             </h1>
-            <p className="text-slate-400 font-medium">Laboratorio de Acordes & Teoría</p>
+            <p className="text-slate-400 font-medium tracking-tight">Círculo de Quintas & Teoría Musical</p>
           </div>
         </div>
         <div className="hidden md:block text-right">
-           <p className="text-xs text-slate-500 italic">"La música es la aritmética de los sonidos, como la óptica es la geometría de la luz."</p>
+           <p className="text-xs text-slate-500 italic">Visualiza bemoles y sostenidos correctamente en el pentagrama.</p>
         </div>
       </header>
 
@@ -83,18 +81,34 @@ const App: React.FC = () => {
         <div className="lg:col-span-8 flex flex-col gap-8">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 flex flex-col items-center justify-center gap-4 min-h-[340px] shadow-xl">
+            <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 flex flex-col items-center justify-center gap-4 min-h-[420px] shadow-xl">
               <h2 className="text-slate-400 text-xs font-black uppercase tracking-widest mb-2 opacity-60">Notación & Pentagrama</h2>
-              <Staff midiNotes={chord.midiNotes} rootNote={root} />
-              <div className="mt-4 text-center">
-                <div className="flex items-center justify-center gap-3">
-                   <span className="text-4xl font-mono font-bold text-sky-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.4)]">
+              <Staff midiNotes={chord.midiNotes} noteNames={chord.notes} rootNote={root} chordType={type} />
+              
+              <div className="mt-4 text-center flex flex-col gap-3 w-full px-4">
+                <div className="flex items-center justify-center gap-4">
+                   <span className="text-5xl font-mono font-black text-sky-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.4)]">
                     {chord.americanNotation}
                   </span>
-                  <div className="flex flex-col items-start bg-slate-900/80 px-2 py-1 rounded border border-slate-700">
-                    <span className="text-[9px] text-slate-500 uppercase font-bold">Intervalos</span>
-                    <span className="text-[10px] text-indigo-400 font-mono">{CHORD_INTERVALS[type].join('-')}</span>
+                  <div className="flex flex-col items-start bg-slate-900/80 px-3 py-1 rounded-lg border border-slate-700 shadow-lg">
+                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Intervalos</span>
+                    <span className="text-xs text-indigo-400 font-mono font-bold">{CHORD_INTERVALS[type].join(' - ')}</span>
                   </div>
+                </div>
+                
+                {/* Specific Note Breakdown (e.g. G - Bb - D) */}
+                <div className="bg-slate-900/40 py-3 rounded-xl border border-slate-700/50 shadow-inner group transition-all hover:bg-slate-900/60">
+                   <span className="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em] block mb-2 opacity-70 group-hover:opacity-100 transition-opacity">Composición Americana</span>
+                   <div className="flex justify-center items-center gap-3">
+                     {chord.notes.map((n, i) => (
+                       <React.Fragment key={i}>
+                         <span className="text-2xl font-mono font-black text-sky-300 drop-shadow-sm">
+                           {n}
+                         </span>
+                         {i < chord.notes.length - 1 && <span className="text-slate-600 font-bold opacity-30">|</span>}
+                       </React.Fragment>
+                     ))}
+                   </div>
                 </div>
               </div>
             </div>
@@ -113,7 +127,7 @@ const App: React.FC = () => {
              <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                <div>
                  <h2 className="text-slate-400 text-xs font-black uppercase tracking-widest opacity-60">Teclado de Aprendizaje</h2>
-                 <p className="text-[10px] text-slate-500 mt-1">Clic en <span className="text-sky-400 font-bold">notas destacadas</span> para tocar el acorde completo</p>
+                 <p className="text-[10px] text-slate-500 mt-1">Notas identificadas a la derecha de cada cabeza de nota en el pentagrama</p>
                </div>
                <div className="flex flex-wrap justify-center gap-2 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50">
                  {Object.values(ChordType).map(t => (
@@ -134,7 +148,6 @@ const App: React.FC = () => {
 
              <Piano chord={chord} activeMidi={playingNotes} onKeyClick={handlePianoKeyClick} />
 
-             {/* Controls moved below the piano for better interaction distance */}
              <div className="mt-8 flex justify-center gap-4">
                 <button 
                   onClick={handlePlayArpeggio}
@@ -160,7 +173,7 @@ const App: React.FC = () => {
               </div>
               <div>
                 <h2 className="font-black text-lg tracking-tight">Maestro AI</h2>
-                <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Teoría & Análisis</span>
+                <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Análisis Armónico</span>
               </div>
             </div>
             
@@ -170,7 +183,7 @@ const App: React.FC = () => {
                   <div className="absolute inset-0 bg-indigo-500 blur-xl opacity-20 animate-pulse"></div>
                   <i className="fas fa-compact-disc fa-spin text-4xl text-indigo-400"></i>
                 </div>
-                <p className="text-sm font-bold tracking-tight text-indigo-300 animate-pulse uppercase">Extrayendo armonía...</p>
+                <p className="text-sm font-bold tracking-tight text-indigo-300 animate-pulse uppercase">Sintonizando frecuencias...</p>
               </div>
             ) : advice ? (
               <div className="space-y-6 animate-fade-in">
@@ -228,16 +241,16 @@ const App: React.FC = () => {
       <footer className="mt-auto pt-8 pb-4 text-center text-slate-500 text-[10px] border-t border-slate-800/50">
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-4">
           <span className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
-            <i className="fas fa-mouse text-sky-500"></i> Clic Notas: Selección
+            <i className="fas fa-music text-sky-500"></i> Círculo de Quintas
           </span>
           <span className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
-            <i className="fas fa-magic text-indigo-500"></i> Clic Destacadas: Acorde
+            <i className="fas fa-feather text-indigo-500"></i> Armonía Correcta
           </span>
           <span className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
-            <i className="fas fa-sync-alt text-purple-500"></i> Círculo: Rotación Mental
+            <i className="fas fa-check text-purple-500"></i> Notación Dual (Staff + Texto)
           </span>
         </div>
-        <p className="font-bold opacity-30">Harmonia • Music Learning Engine v2.5 • Gemini 3 Flash</p>
+        <p className="font-bold opacity-30">Harmonia • Music Learning Engine v2.7 • Gemini 3 Flash</p>
       </footer>
     </div>
   );
